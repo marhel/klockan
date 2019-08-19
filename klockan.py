@@ -3,11 +3,13 @@ from pygame.locals import *
 import time
 from math import sin, cos, radians
 
-GREEN = (0, 180, 0)
-BLUE = (0, 0, 255)
-YELLOW = (255, 255, 0)
-BLACK = (0, 0, 0)
-GRAY = (100, 100, 100)
+GREEN = (0x4C, 0xE0, 0xB3)
+BLUE = (0x56, 0xCB, 0xF9)
+YELLOW = (0xF4, 0xE7, 0x6E)
+PINK = (0xEF, 0x76, 0x7A)
+BLACK = (0x29, 0x2C, 0x33)
+GRAY = (0x5C, 0x64, 0x73)
+TRANSPARENT = (0, 0, 0, 0)
 
 class Klocka(pygame.Surface):
     now = time.localtime()
@@ -17,7 +19,7 @@ class Klocka(pygame.Surface):
         pygame.Surface.__init__(self, self.size)
         print("Klocka init")
         self.hand_color = (255, 200, 0)
-        self.dots_color = (255, 100, 0)
+        self.dots_color = GREEN
         self.background_color = GRAY
         self.background_image = None #pygame.image.load("back.png").convert()
         self.pos = (0, 0)
@@ -57,18 +59,23 @@ class Klocka(pygame.Surface):
         
         if hour > 12: hour = hour - 12
         hour_angle = hour * 30
-        hour_point = self.screen_point(self.rotated((x, y * 0.6), hour_angle))
-        pygame.draw.line(self, BLUE, self.screen_point((0, 0)), hour_point, 15)
-            
         minute_angle = minute * 6
-        minute_point = self.screen_point(self.rotated((x, y * 0.8), minute_angle))
-        pygame.draw.line(self, GREEN, self.screen_point((0, 0)), minute_point, 7)
-        
         second_angle = second * 6
-        second_point = self.screen_point(self.rotated((x, y), second_angle))
-        pygame.draw.line(self, YELLOW, self.screen_point((0, 0)), second_point, 3)
-        
+
+        self.blit_hand(15, y * 0.6, BLUE, hour_angle)
+        self.blit_hand(7, y * 0.8, PINK, minute_angle)
+        self.blit_hand(3, y * 1.0, YELLOW, second_angle)
+
         pygame.draw.circle(self, BLACK, self.screen_point((0, 0)), 20)
+
+    def blit_hand(self, w, l, col, rot):
+        hand_img = pygame.Surface((w , 2 * l))
+        hand_img.set_colorkey(TRANSPARENT)
+        pygame.draw.rect(hand_img, col, (0,0, w, l))
+        rot_hour = pygame.transform.rotate(hand_img, - rot)
+        hand_rect = rot_hour.get_rect()
+        hand_rect.center = self.screen_point((0, 0))
+        self.blit(rot_hour, hand_rect)
         
     def rotated(self, point, angle):
         x, y = point
@@ -85,11 +92,15 @@ class Klocka(pygame.Surface):
 
 
 last_sec = -1
-display_width = 800
+display_width = 400
 display_height = 600
+display_time = time.time()
+display_offset = 0
+display_delta = 1
 
 pygame.init()
 pygame.font.init()
+pygame.key.set_repeat(500, 50)
 # available = pygame.font.get_fonts()
 # print(available)
 font = pygame.font.SysFont("menlottc", 36)
@@ -101,6 +112,8 @@ klockan = Klocka()
 digital = font.render("00:00", True, GREEN)
 
 def event_handler():
+    global display_delta, display_offset
+    mul = 1
     for event in pygame.event.get():
         if event.type == QUIT or (
              event.type == KEYDOWN and (
@@ -109,13 +122,30 @@ def event_handler():
              )):
             pygame.quit()
             quit()
+        if event.type == KEYDOWN and event.key == K_UP:
+            display_delta += 1
+        if event.type == KEYDOWN and event.key == K_DOWN:
+            display_delta -= 1
+        if event.type == pygame.KEYDOWN:
+            if event.mod == pygame.KMOD_NONE:
+                mul = 1
+            if event.mod & pygame.KMOD_SHIFT:
+                mul *= 60
+            if event.mod & pygame.KMOD_CTRL:
+                mul *= 60
+        if event.type == KEYDOWN and event.key == K_LEFT:
+            display_delta = 0
+            display_offset -= mul
+        if event.type == KEYDOWN and event.key == K_RIGHT:
+            display_delta = 0
+            display_offset += mul
 
 def draw_digital():
     pygame.draw.rect(game_display, GRAY, (0, 400, display_width, 200))
     digital = [
         font.render("%02d" % klockan.now.tm_hour, True, BLUE),
         font.render(":", True, BLACK),
-        font.render("%02d" % klockan.now.tm_min, True, GREEN),
+        font.render("%02d" % klockan.now.tm_min, True, PINK),
         font.render(":", True, BLACK),
         font.render("%02d" % klockan.now.tm_sec, True, YELLOW)]
     offs = 400 // 2 - 176 // 2
@@ -128,13 +158,15 @@ def draw_clock():
 
 def newSecond():
     global last_sec, digital
-    result = klockan.now.tm_sec != last_sec
-    last_sec = klockan.now.tm_sec
+    result = klockan.now.tm_hour * 60 * 60 + klockan.now.tm_min * 60 + klockan.now.tm_sec != last_sec
+    last_sec = klockan.now.tm_hour * 60 * 60 + klockan.now.tm_min * 60 + klockan.now.tm_sec
     return result
 
 while True:
     event_handler()
-    klockan.now = time.localtime()
+    klockan.now = time.localtime(display_time)
+    display_offset += display_delta
+    display_time = time.time() + display_offset
     if newSecond():
         draw_clock()
         draw_digital()
