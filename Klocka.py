@@ -41,9 +41,9 @@ class Klocka(pygame.Surface):
         self.blit_hands(hour, minute)
         self.blit_dots()
         self.blit_second_hand(second)
-        self.blit_day(day)
+        daycol = self.blit_day(day)
 
-        pygame.draw.circle(self, BLACK, self.screen_point((0, 0)), 20)
+        pygame.draw.circle(self, daycol, self.screen_point((0, 0)), 20)
 
         surface.blit(self, self.pos)
 
@@ -113,6 +113,7 @@ class Klocka(pygame.Surface):
         dawn_end = 40
         dusk = 90
         dusk_end = 100
+        daycol = BLACK
 
         def fade(step, number_of_steps, base_color, next_color):
             return [x + (((y - x) / number_of_steps) * step) for x, y in
@@ -123,7 +124,6 @@ class Klocka(pygame.Surface):
             angle_end = (i + 1) * 6
             point = self.screen_point(self.rotated((x, y * (1.4 + 0.15 * i / 120.)), angle_start))
             spoint = self.screen_point(self.rotated((x, y * (1.4 + 0.15 * i / 120.)), angle_end))
-            daycol = BLACK
             if dawn < i <= dawn_end:
                 daycol = fade(i - dawn, dawn_end - dawn, BLACK, YELLOW)
             if i > dawn_end:
@@ -133,6 +133,8 @@ class Klocka(pygame.Surface):
             if i > dusk_end:
                 daycol = BLACK
             pygame.draw.line(self, daycol, spoint, point, 9)
+
+        return daycol
 
     def rotated(self, point, angle):
         x, y = point
