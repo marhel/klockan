@@ -62,14 +62,17 @@ class Klocka(pygame.Surface):
         minute_angle = minute * 6
         second_angle = second * 6
 
-        self.blit_hand(15, y * 0.6, BLUE, hour_angle)
-        self.blit_hand(7, y * 0.8, PINK, minute_angle)
-        self.blit_hand(3, y * 1.0, YELLOW, second_angle)
+        self.blit_hand(21, y * 0.6, BLUE, hour_angle)
+        self.blit_hand(13, y * 0.8, PINK, minute_angle)
+        self.blit_hand(5, y * 1.0, YELLOW, second_angle)
 
         DAWN = 30
         DAWN_END = 40
         DUSK = 90
         DUSK_END = 100
+        def fade(step, number_of_steps, base_color, next_color):
+            return [x + (((y-x)/number_of_steps)*step) for x, y in zip(pygame.color.Color(base_color), pygame.color.Color(next_color))]
+
         for i in range(0, int(120 * day)+1):
             angle_start = i * 6
             angle_end = (i+1) * 6
@@ -77,11 +80,11 @@ class Klocka(pygame.Surface):
             spoint = self.screen_point(self.rotated((x,y*(1.05+0.15*i/120.)), angle_end))
             daycol = BLACK
             if i > DAWN and i <= DAWN_END:
-                daycol = (int(0xF4*(i-DAWN)/float(DAWN_END-DAWN)), int(0xE7*(i-DAWN)/float(DAWN_END-DAWN)), int(0x6E*(i-DAWN)/float(DAWN_END-DAWN)))
+                daycol = fade(i-DAWN, DAWN_END-DAWN, BLACK, YELLOW)
             if i > DAWN_END:
                 daycol = YELLOW
             if i > DUSK and i <= DUSK_END:
-                daycol = (int(0xF4*(DUSK_END-i)/float(DUSK_END-DUSK)), int(0xE7*(DUSK_END-i)/float(DUSK_END-DUSK)), int(0x6E*(DUSK_END-i)/float(DUSK_END-DUSK)))
+                daycol = fade(i-DUSK, DUSK_END-DUSK, YELLOW, BLACK)
             if i > DUSK_END:
                 daycol = BLACK
             pygame.draw.line(self, daycol, spoint, point, 9)
@@ -150,9 +153,9 @@ def event_handler():
             if event.mod == pygame.KMOD_NONE:
                 mul = 1
             if event.mod & pygame.KMOD_SHIFT:
-                mul *= 60
+                mul *= 73
             if event.mod & pygame.KMOD_CTRL:
-                mul *= 60
+                mul *= 12
         if event.type == KEYDOWN and event.key == K_LEFT:
             display_delta = 0
             display_offset -= mul
