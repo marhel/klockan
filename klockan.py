@@ -16,6 +16,7 @@ class Klocka(pygame.Surface):
     running = True
     size = (400, 400)
     floating_minutes = False
+    floating_hours = True
 
     def __init__(self):
         pygame.Surface.__init__(self, self.size)
@@ -58,7 +59,9 @@ class Klocka(pygame.Surface):
         minute = self.now.tm_min
         if self.floating_minutes:
             minute += second / 60.
-        hour = self.now.tm_hour + minute / 60.
+        hour = self.now.tm_hour
+        if self.floating_hours:
+            hour += minute / 60.
         day = hour / 24.
         
         if hour > 12: hour = hour - 12
@@ -163,6 +166,8 @@ def event_handler(klocka):
                 mul *= 4
         if event.type == KEYDOWN and event.key == K_m:
             klocka.floating_minutes = not klocka.floating_minutes
+        if event.type == KEYDOWN and event.key == K_h:
+            klocka.floating_hours = not klocka.floating_hours
         if event.type == KEYDOWN and event.key == K_n:
             display_offset = 0
             display_time = time.time()
