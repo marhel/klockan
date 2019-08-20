@@ -14,6 +14,7 @@ TRANSPARENT = (0, 0, 0, 0)
 class Klocka(pygame.Surface):
     now = time.localtime()
     size = (400, 400)
+    floating_minutes = False
 
     def __init__(self):
         pygame.Surface.__init__(self, self.size)
@@ -53,7 +54,9 @@ class Klocka(pygame.Surface):
         y = self.hand_length
         
         second = self.now.tm_sec
-        minute = self.now.tm_min + second / 60.
+        minute = self.now.tm_min
+        if self.floating_minutes:
+            minute += second / 60.
         hour = self.now.tm_hour + minute / 60.
         day = hour / 24.
         
@@ -134,7 +137,7 @@ pygame.display.update()
 klockan = Klocka()
 digital = font.render("00:00", True, GREEN)
 
-def event_handler():
+def event_handler(klocka):
     global display_delta, display_offset
     mul = 1
     for event in pygame.event.get():
@@ -156,6 +159,8 @@ def event_handler():
                 mul *= 73
             if event.mod & pygame.KMOD_CTRL:
                 mul *= 12
+        if event.type == KEYDOWN and event.key == K_m:
+            klocka.floating_minutes = not klocka.floating_minutes
         if event.type == KEYDOWN and event.key == K_LEFT:
             display_delta = 0
             display_offset -= mul
@@ -186,7 +191,7 @@ def newSecond():
     return result
 
 while True:
-    event_handler()
+    event_handler(klockan)
     klockan.now = time.localtime(display_time)
     display_offset += display_delta
     display_time = time.time() + display_offset
