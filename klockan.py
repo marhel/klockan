@@ -13,11 +13,11 @@ TRANSPARENT = (0, 0, 0, 0)
 
 class Klocka(pygame.Surface):
     now = time.localtime()
-    running = True
+    running = False
     size = (400, 400)
     floating_minutes = False
     floating_hours = True
-    with_seconds = True
+    with_seconds = False
 
     def __init__(self):
         pygame.Surface.__init__(self, self.size)
@@ -164,13 +164,13 @@ def event_handler(klocka):
                     mul = 60
             if event.key == K_a or event.key == K_q:
                 if klocka.with_seconds:
-                    mul = 73 * 12
+                    mul = 73 * 5
                 else:
-                    mul = 60 * 12
+                    mul = 60 * 5
             if event.mod & pygame.KMOD_SHIFT:
                 mul *= 3
             if event.mod & pygame.KMOD_CTRL:
-                mul *= 5
+                mul *= 4
         if event.type == KEYDOWN and event.key == K_m:
             klocka.floating_minutes = not klocka.floating_minutes
         if event.type == KEYDOWN and event.key == K_h:
