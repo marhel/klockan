@@ -17,6 +17,7 @@ class Klocka(pygame.Surface):
     size = (400, 400)
     floating_minutes = False
     floating_hours = True
+    with_seconds = True
 
     def __init__(self):
         pygame.Surface.__init__(self, self.size)
@@ -27,14 +28,14 @@ class Klocka(pygame.Surface):
         self.background_image = None #pygame.image.load("back.png").convert()
         self.pos = (0, 0)
         self.hand_length = 160
-        
+
     def blit_on(self, surface):
         self.fill(self.background_color)
         if not self.background_image == None: self.blit(self.background_image, (0,0))
         self.blit_dots()
         self.blit_hands()
         surface.blit(self, self.pos)
-    
+
     def blit_dots(self):
         # standard coords of 12:00:00
         x = 0
@@ -49,12 +50,12 @@ class Klocka(pygame.Surface):
             point = self.screen_point(self.rotated((x,y), angle))
             spoint = self.screen_point(self.rotated((x,y * 1.1), angle))
             pygame.draw.line(self, BLUE, spoint, point, 4)
-    
+
     def blit_hands(self):
         # standard coords of 12:00:00
         x = 0
         y = self.hand_length
-        
+
         second = self.now.tm_sec
         minute = self.now.tm_min
         if self.floating_minutes:
@@ -63,7 +64,7 @@ class Klocka(pygame.Surface):
         if self.floating_hours:
             hour += minute / 60.
         day = hour / 24.
-        
+
         if hour > 12: hour = hour - 12
         hour_angle = hour * 30
         minute_angle = minute * 6
@@ -71,7 +72,7 @@ class Klocka(pygame.Surface):
 
         self.blit_hand(21, y * 0.6, BLUE, hour_angle)
         self.blit_hand(13, y * 0.8, PINK, minute_angle)
-        self.blit_hand(5, y * 1.0, YELLOW, second_angle)
+        if self.with_seconds: self.blit_hand(5, y * 1.0, YELLOW, second_angle)
 
         DAWN = 30
         DAWN_END = 40
@@ -106,14 +107,14 @@ class Klocka(pygame.Surface):
         hand_rect = rot_hour.get_rect()
         hand_rect.center = self.screen_point((0, 0))
         self.blit(rot_hour, hand_rect)
-        
+
     def rotated(self, point, angle):
         x, y = point
         angle = radians(-angle)
         rotated_x = int(x * cos(angle) - y * sin(angle))
         rotated_y = int(x * sin(angle) + y * cos(angle))
         return (rotated_x, rotated_y)
-        
+
     def screen_point(self, point):
         x, y = point
         x_p = x + self.size[0] / 2
@@ -157,17 +158,25 @@ def event_handler(klocka):
             if event.key == K_d or event.key == K_e:
                 mul = 1
             if event.key == K_s or event.key == K_w:
-                mul = 73
+                if klocka.with_seconds:
+                    mul = 73
+                else:
+                    mul = 60
             if event.key == K_a or event.key == K_q:
-                mul = 73 * 12
+                if klocka.with_seconds:
+                    mul = 73 * 12
+                else:
+                    mul = 60 * 12
             if event.mod & pygame.KMOD_SHIFT:
-                mul *= 2
+                mul *= 3
             if event.mod & pygame.KMOD_CTRL:
-                mul *= 4
+                mul *= 5
         if event.type == KEYDOWN and event.key == K_m:
             klocka.floating_minutes = not klocka.floating_minutes
         if event.type == KEYDOWN and event.key == K_h:
             klocka.floating_hours = not klocka.floating_hours
+        if event.type == KEYDOWN and event.key == K_i:
+            klocka.with_seconds = not klocka.with_seconds
         if event.type == KEYDOWN and event.key == K_n:
             display_offset = 0
             display_time = time.time()
@@ -225,10 +234,18 @@ def draw_digital():
     digital = [
         font.render("%02d" % klockan.now.tm_hour, True, BLUE),
         font.render(":", True, BLACK),
-        font.render("%02d" % klockan.now.tm_min, True, PINK),
-        font.render(":", True, BLACK),
-        font.render("%02d" % klockan.now.tm_sec, True, YELLOW)]
-    offs = 400 // 2 - 176 // 2
+        font.render("%02d" % klockan.now.tm_min, True, PINK)]
+
+    if klockan.with_seconds:
+        digital += [
+            font.render(":", True, BLACK),
+            font.render("%02d" % klockan.now.tm_sec, True, YELLOW)]
+
+    tw = 0
+    for dig in digital:
+        tw += dig.get_width()
+
+    offs = 400 // 2 - tw // 2
     for dig in digital:
         game_display.blit(dig, (offs, 450 - dig.get_height() // 2))
         offs += dig.get_width()
