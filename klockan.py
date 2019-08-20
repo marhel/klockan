@@ -23,7 +23,7 @@ class Klocka(pygame.Surface):
         self.background_color = GRAY
         self.background_image = None #pygame.image.load("back.png").convert()
         self.pos = (0, 0)
-        self.hand_length = 180
+        self.hand_length = 160
         
     def blit_on(self, surface):
         self.fill(self.background_color)
@@ -35,18 +35,17 @@ class Klocka(pygame.Surface):
     def blit_dots(self):
         # standard coords of 12:00:00
         x = 0
-        y = self.hand_length - 10
+        y = self.hand_length * 0.9
         for i in range(1, 61):
             angle = i * 6
             point = self.screen_point(self.rotated((x,y), angle))
             spoint = self.screen_point(self.rotated((x,y * 0.9), angle))
             pygame.draw.line(self, BLACK, spoint, point, 4)
-            self.set_at(point, self.dots_color)
         for i in range(1, 13):
             angle = i * 30
             point = self.screen_point(self.rotated((x,y), angle))
             spoint = self.screen_point(self.rotated((x,y * 1.1), angle))
-            pygame.draw.line(self, self.dots_color, spoint, point, 4)
+            pygame.draw.line(self, BLUE, spoint, point, 4)
     
     def blit_hands(self):
         # standard coords of 12:00:00
@@ -56,6 +55,7 @@ class Klocka(pygame.Surface):
         second = self.now.tm_sec
         minute = self.now.tm_min + second / 60.
         hour = self.now.tm_hour + minute / 60.
+        day = hour / 24.
         
         if hour > 12: hour = hour - 12
         hour_angle = hour * 30
@@ -65,6 +65,26 @@ class Klocka(pygame.Surface):
         self.blit_hand(15, y * 0.6, BLUE, hour_angle)
         self.blit_hand(7, y * 0.8, PINK, minute_angle)
         self.blit_hand(3, y * 1.0, YELLOW, second_angle)
+
+        DAWN = 30
+        DAWN_END = 40
+        DUSK = 90
+        DUSK_END = 100
+        for i in range(0, int(120 * day)+1):
+            angle_start = i * 6
+            angle_end = (i+1) * 6
+            point = self.screen_point(self.rotated((x,y*(1.05+0.15*i/120.)), angle_start))
+            spoint = self.screen_point(self.rotated((x,y*(1.05+0.15*i/120.)), angle_end))
+            daycol = BLACK
+            if i > DAWN and i <= DAWN_END:
+                daycol = (int(0xF4*(i-DAWN)/float(DAWN_END-DAWN)), int(0xE7*(i-DAWN)/float(DAWN_END-DAWN)), int(0x6E*(i-DAWN)/float(DAWN_END-DAWN)))
+            if i > DAWN_END:
+                daycol = YELLOW
+            if i > DUSK and i <= DUSK_END:
+                daycol = (int(0xF4*(DUSK_END-i)/float(DUSK_END-DUSK)), int(0xE7*(DUSK_END-i)/float(DUSK_END-DUSK)), int(0x6E*(DUSK_END-i)/float(DUSK_END-DUSK)))
+            if i > DUSK_END:
+                daycol = BLACK
+            pygame.draw.line(self, daycol, spoint, point, 9)
 
         pygame.draw.circle(self, BLACK, self.screen_point((0, 0)), 20)
 
@@ -96,7 +116,7 @@ display_width = 400
 display_height = 600
 display_time = time.time()
 display_offset = 0
-display_delta = 1
+display_delta = 0
 
 pygame.init()
 pygame.font.init()
