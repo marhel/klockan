@@ -40,16 +40,16 @@ class Klocka(pygame.Surface):
         # standard coords of 12:00:00
         x = 0
         y = self.hand_length * 0.9
-        for i in range(1, 61):
-            angle = i * 6
-            point = self.screen_point(self.rotated((x,y), angle))
-            spoint = self.screen_point(self.rotated((x,y * 0.9), angle))
-            pygame.draw.line(self, BLACK, spoint, point, 4)
         for i in range(1, 13):
             angle = i * 30
             point = self.screen_point(self.rotated((x,y), angle))
             spoint = self.screen_point(self.rotated((x,y * 1.1), angle))
             pygame.draw.line(self, BLUE, spoint, point, 4)
+        for i in range(1, 61):
+            angle = i * 6
+            point = self.screen_point(self.rotated((x,y), angle))
+            spoint = self.screen_point(self.rotated((x,y * 0.9), angle))
+            pygame.draw.line(self, PINK, spoint, point, 4)
 
     def blit_hands(self):
         # standard coords of 12:00:00
