@@ -6,8 +6,8 @@ from Klocka import Klocka
 from färger import GREEN, BLUE, YELLOW, PINK, BLACK, GRAY
 
 last_sec = -1
-display_width = 400
-display_height = 600
+display_width = 500
+display_height = 800
 display_time = time.time()
 display_offset = 0
 display_delta = 0
@@ -24,7 +24,7 @@ game_display.fill(GRAY)
 pygame.display.set_caption('Klockan')
 pygame.display.update()
 klockan = Klocka()
-digital = font.render("00:00", True, GREEN)
+digital = []
 
 
 def event_handler(klocka):
@@ -79,7 +79,8 @@ def event_handler(klocka):
 
 
 def draw_text():
-    pygame.draw.rect(game_display, GRAY, (0, 550, display_width, 200))
+    top = display_width+150
+    pygame.draw.rect(game_display, GRAY, (0, top, display_width, 200))
     timme = klockan.now.tm_hour
     minut = klockan.now.tm_min
     if timme > 12: timme -= 12
@@ -102,23 +103,24 @@ def draw_text():
     for dig in text1:
         t1w += dig.get_width()
 
-    offs = 50
+    offs = 70
     for dig in text1:
-        game_display.blit(dig, (offs, 550 - dig.get_height() // 2))
+        game_display.blit(dig, (offs, top - dig.get_height() // 2))
         offs += dig.get_width()
 
     t2w = 0
     for dig in text2:
         t2w += dig.get_width()
 
-    offs = 50
+    offs = 70
     for dig in text2:
-        game_display.blit(dig, (offs, 580 - dig.get_height() // 2))
+        game_display.blit(dig, (offs, top + 30 - dig.get_height() // 2))
         offs += dig.get_width()
 
 
 def draw_digital():
-    pygame.draw.rect(game_display, GRAY, (0, 400, display_width, 200))
+    top = display_width+50
+    pygame.draw.rect(game_display, GRAY, (0, top, display_width, 200))
     digital = [
         font.render("%02d" % klockan.now.tm_hour, True, BLUE),
         font.render(":", True, BLACK),
@@ -133,9 +135,9 @@ def draw_digital():
     for dig in digital:
         tw += dig.get_width()
 
-    offs = 400 // 2 - tw // 2
+    offs = display_width // 2 - tw // 2
     for dig in digital:
-        game_display.blit(dig, (offs, 450 - dig.get_height() // 2))
+        game_display.blit(dig, (offs, top))
         offs += dig.get_width()
 
 

@@ -2,33 +2,32 @@ import time
 from math import radians, cos, sin
 
 import pygame
+from pygame.locals import *
 
-from färger import GREEN, BLUE, YELLOW, PINK, BLACK, GRAY, TRANSPARENT
+from färger import GREEN, BLUE, YELLOW, PINK, PINK_T, BLACK, GRAY, TRANSPARENT
 
 
 class Klocka(pygame.Surface):
     now = time.localtime()
     running = False
-    size = (400, 400)
+    size = (500, 500)
     floating_minutes = False
     floating_hours = True
     with_seconds = False
     pygame.font.init()
     font = pygame.font.SysFont("menlottc", 36)
+    font2 = pygame.font.SysFont("menlottc", 18)
 
     def __init__(self):
         pygame.Surface.__init__(self, self.size)
         print("Klocka init")
         self.hand_color = (255, 200, 0)
-        self.dots_color = GREEN
         self.background_color = GRAY
-        self.background_image = None  # pygame.image.load("back.png").convert()
         self.pos = (0, 0)
         self.hand_length = 160
 
     def blit_on(self, surface):
         self.fill(self.background_color)
-        if not self.background_image == None: self.blit(self.background_image, (0, 0))
 
         second = self.now.tm_sec
         minute = self.now.tm_min
@@ -39,8 +38,9 @@ class Klocka(pygame.Surface):
             hour += minute / 60.
         day = hour / 24.
 
+        self.blit_hands(hour, minute)
         self.blit_dots()
-        self.blit_hands(hour, minute, second)
+        self.blit_second_hand(second)
         self.blit_day(day)
 
         pygame.draw.circle(self, BLACK, self.screen_point((0, 0)), 20)
@@ -68,8 +68,15 @@ class Klocka(pygame.Surface):
             num_rect = num.get_rect()
             num_rect.center = point
             self.blit(num, num_rect)
+        for i in range(5, 61, 5):
+            angle = i * 6
+            point = self.screen_point(self.rotated((x, y / 1.3), angle))
+            num = self.font2.render(str(i), True, PINK_T)
+            num_rect = num.get_rect()
+            num_rect.center = point
+            self.blit(num, num_rect, special_flags=BLEND_ADD)
 
-    def blit_hands(self, hour, minute, second):
+    def blit_hands(self, hour, minute):
         # standard coords of 12:00:00
         x = 0
         y = self.hand_length
@@ -77,11 +84,27 @@ class Klocka(pygame.Surface):
         if hour > 12: hour = hour - 12
         hour_angle = hour * 30
         minute_angle = minute * 6
-        second_angle = second * 6
 
         self.blit_hand(21, y * 0.6, BLUE, hour_angle)
         self.blit_hand(13, y * 0.8, PINK, minute_angle)
+
+    def blit_second_hand(self, second):
+        # standard coords of 12:00:00
+        x = 0
+        y = self.hand_length
+
+        second_angle = second * 6
+
         if self.with_seconds: self.blit_hand(5, y * 1.0, YELLOW, second_angle)
+
+    def blit_hand(self, w, l, col, rot):
+        hand_img = pygame.Surface((w, 2 * l))
+        hand_img.set_colorkey(TRANSPARENT)
+        pygame.draw.rect(hand_img, col, (0, 0, w, l))
+        rot_hour = pygame.transform.rotate(hand_img, - rot)
+        hand_rect = rot_hour.get_rect()
+        hand_rect.center = self.screen_point((0, 0))
+        self.blit(rot_hour, hand_rect)
 
     def blit_day(self, day):
         x = 0
@@ -98,8 +121,8 @@ class Klocka(pygame.Surface):
         for i in range(0, int(120 * day) + 1):
             angle_start = i * 6
             angle_end = (i + 1) * 6
-            point = self.screen_point(self.rotated((x, y * (1.05 + 0.15 * i / 120.)), angle_start))
-            spoint = self.screen_point(self.rotated((x, y * (1.05 + 0.15 * i / 120.)), angle_end))
+            point = self.screen_point(self.rotated((x, y * (1.4 + 0.15 * i / 120.)), angle_start))
+            spoint = self.screen_point(self.rotated((x, y * (1.4 + 0.15 * i / 120.)), angle_end))
             daycol = BLACK
             if dawn < i <= dawn_end:
                 daycol = fade(i - dawn, dawn_end - dawn, BLACK, YELLOW)
@@ -110,15 +133,6 @@ class Klocka(pygame.Surface):
             if i > dusk_end:
                 daycol = BLACK
             pygame.draw.line(self, daycol, spoint, point, 9)
-
-    def blit_hand(self, w, l, col, rot):
-        hand_img = pygame.Surface((w, 2 * l))
-        hand_img.set_colorkey(TRANSPARENT)
-        pygame.draw.rect(hand_img, col, (0, 0, w, l))
-        rot_hour = pygame.transform.rotate(hand_img, - rot)
-        hand_rect = rot_hour.get_rect()
-        hand_rect.center = self.screen_point((0, 0))
-        self.blit(rot_hour, hand_rect)
 
     def rotated(self, point, angle):
         x, y = point
