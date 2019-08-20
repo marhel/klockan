@@ -191,7 +191,7 @@ def draw_text():
     text1 = [
         font2.render(precision[minut % 5], True, PINK),
         font2.render(minuter[(minut+2)//5], True, PINK),
-        font2.render(namn[timme + (minut+35)//60], True, BLUE)
+        font2.render(namn[timme + (minut+35+2)//60], True, BLUE)
     ]
     text2 = [
         font2.render("     på ", True, BLACK),
