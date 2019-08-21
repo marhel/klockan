@@ -51,6 +51,7 @@ class Klocka(pygame.Surface):
         # standard coords of 12:00:00
         x = 0
         y = self.hand_length * 0.9
+
         for i in range(1, 13):
             angle = i * 30
             point = self.screen_point(self.rotated((x, y), angle))
@@ -64,7 +65,7 @@ class Klocka(pygame.Surface):
         for i in range(1, 13):
             angle = i * 30
             point = self.screen_point(self.rotated((x, y * 1.3), angle))
-            num = self.font.render(str(i), True, BLUE)
+            num = self.font.render(str(i if min(abs(i - self.now.tm_hour), abs((i + 24) - self.now.tm_hour)) < (6 if 6 < self.now.tm_hour <= 18 else 7) else i+12), True, BLUE)
             num_rect = num.get_rect()
             num_rect.center = point
             self.blit(num, num_rect)
