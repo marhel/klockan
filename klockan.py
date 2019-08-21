@@ -61,6 +61,8 @@ def event_handler(klocka):
             klocka.floating_hours = not klocka.floating_hours
         if event.type == KEYDOWN and event.key == K_i:
             klocka.with_seconds = not klocka.with_seconds
+        if event.type == KEYDOWN and event.key == K_p:
+            klocka.pseudo_24h = not klocka.pseudo_24h
         if event.type == KEYDOWN and event.key == K_n:
             display_offset = 0
             display_time = time.time()

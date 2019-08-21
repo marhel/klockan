@@ -14,6 +14,7 @@ class Klocka(pygame.Surface):
     floating_minutes = False
     floating_hours = True
     with_seconds = False
+    pseudo_24h = False
     pygame.font.init()
     font = pygame.font.SysFont("menlottc", 36)
     font2 = pygame.font.SysFont("menlottc", 18)
@@ -65,7 +66,18 @@ class Klocka(pygame.Surface):
         for i in range(1, 13):
             angle = i * 30
             point = self.screen_point(self.rotated((x, y * 1.3), angle))
-            num = self.font.render(str(i if min(abs(i - self.now.tm_hour), abs((i + 24) - self.now.tm_hour)) < (6 if 6 < self.now.tm_hour <= 18 else 7) else i+12), True, BLUE)
+            hour = i
+            if self.pseudo_24h:
+                sepangle = ((6 + self.now.tm_hour) % 12) * 30 + 15
+                sep_point = self.screen_point(self.rotated((x, y * 1.1), sepangle))
+                sep_endpoint = self.screen_point(self.rotated((x, y * 1.5), sepangle))
+                pygame.draw.line(self, YELLOW, sep_endpoint, sep_point, 8)
+
+                diff0 = abs(i - self.now.tm_hour)
+                diff24 = abs((i + 24) - self.now.tm_hour)
+                limit = 6 if 6 < self.now.tm_hour <= 18 else 7
+                hour = i if min(diff0, diff24) < limit else i+12
+            num = self.font.render(str(hour), True, BLUE)
             num_rect = num.get_rect()
             num_rect.center = point
             self.blit(num, num_rect)
