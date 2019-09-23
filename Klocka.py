@@ -76,7 +76,7 @@ class Klocka(pygame.Surface):
                 diff0 = abs(i - self.now.tm_hour)
                 diff24 = abs((i + 24) - self.now.tm_hour)
                 limit = 6 if 6 < self.now.tm_hour <= 18 else 7
-                hour = i if min(diff0, diff24) < limit else i+12
+                hour = (i if min(diff0, diff24) < limit else i+12) % 24
             num = self.font.render(str(hour), True, BLUE)
             num_rect = num.get_rect()
             num_rect.center = point

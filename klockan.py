@@ -63,7 +63,7 @@ def event_handler(klocka):
             klocka.with_seconds = not klocka.with_seconds
         if event.type == KEYDOWN and event.key == K_p:
             klocka.pseudo_24h = not klocka.pseudo_24h
-        if event.type == KEYDOWN and event.key == K_n:
+        if event.type == KEYDOWN and (event.key == K_n or event.key == K_RETURN):
             display_offset = 0
             display_time = time.time()
         if event.type == KEYDOWN and event.key == K_r:
@@ -101,24 +101,31 @@ def draw_text():
         font2.render("     på ", True, BLACK),
         font2.render(period[klockan.now.tm_hour // 3], True, BLACK)
     ]
-    t1w = 0
-    for dig in text1:
-        t1w += dig.get_width()
+    state = [[klockan.floating_minutes, 'm'],
+             [klockan.floating_hours, 'h'],
+             [klockan.with_seconds, 'i'],
+             [klockan.pseudo_24h, 'p'],
+             [klockan.running, 'r']]
+    text3 = [font2.render(char, True, YELLOW if toggle else BLACK) for toggle, char in state]
 
     offs = 70
     for dig in text1:
         game_display.blit(dig, (offs, top - dig.get_height() // 2))
         offs += dig.get_width()
 
-    t2w = 0
-    for dig in text2:
-        t2w += dig.get_width()
-
     offs = 70
     for dig in text2:
         game_display.blit(dig, (offs, top + 30 - dig.get_height() // 2))
         offs += dig.get_width()
 
+    t3w = 0
+    for dig in text3:
+        t3w += dig.get_width()
+
+    offs = game_display.get_width() // 2
+    for dig in text3:
+        game_display.blit(dig, (offs - t3w // 2, top + 90 - dig.get_height() // 2))
+        offs += dig.get_width()
 
 def draw_digital():
     top = display_width+50
@@ -147,10 +154,13 @@ def draw_clock():
     klockan.blit_on(game_display)
 
 
-def newSecond():
-    global last_sec, digital
-    result = klockan.now.tm_hour * 60 * 60 + klockan.now.tm_min * 60 + klockan.now.tm_sec != last_sec
-    last_sec = klockan.now.tm_hour * 60 * 60 + klockan.now.tm_min * 60 + klockan.now.tm_sec
+def newState():
+    global last_sec, digital, last_state
+    state = [klockan.floating_minutes, klockan.floating_hours, klockan.with_seconds, klockan.pseudo_24h, klockan.running]
+    sec = klockan.now.tm_hour * 60 * 60 + klockan.now.tm_min * 60 + klockan.now.tm_sec
+    result = sec != last_sec or state != last_state
+    last_sec = sec
+    last_state = state
     return result
 
 
@@ -163,7 +173,7 @@ while True:
     else:
         display_time += display_offset
         display_offset = 0
-    if newSecond():
+    if newState():
         draw_clock()
         draw_digital()
         draw_text()
