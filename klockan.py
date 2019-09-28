@@ -42,14 +42,14 @@ def event_handler(klocka):
         if event.type == KEYDOWN and event.key == K_DOWN:
             display_delta -= 1
         if event.type == pygame.KEYDOWN:
-            if event.key == K_d or event.key == K_e:
+            if event.key == K_3 or event.key == K_e:
                 mul = 1
-            if event.key == K_s or event.key == K_w:
+            if event.key == K_2 or event.key == K_w:
                 if klocka.with_seconds:
                     mul = 73
                 else:
                     mul = 60
-            if event.key == K_a or event.key == K_q:
+            if event.key == K_1 or event.key == K_q:
                 if klocka.with_seconds:
                     mul = 73 * 5
                 else:
@@ -62,13 +62,13 @@ def event_handler(klocka):
             klocka.floating_minutes = not klocka.floating_minutes
         if event.type == KEYDOWN and event.key == K_h:
             klocka.floating_hours = not klocka.floating_hours
-        if event.type == KEYDOWN and event.key == K_i:
+        if event.type == KEYDOWN and event.key == K_s:
             klocka.with_seconds = not klocka.with_seconds
         if event.type == KEYDOWN and event.key == K_t:
             clock_text = not clock_text
-        if event.type == KEYDOWN and event.key == K_l:
+        if event.type == KEYDOWN and event.key == K_d:
             clock_digital = not clock_digital
-        if event.type == KEYDOWN and event.key == K_f:
+        if event.type == KEYDOWN and event.key == K_a:
             clock_analog = not clock_analog
         if event.type == KEYDOWN and event.key == K_p:
             klocka.pseudo_24h = not klocka.pseudo_24h
@@ -81,12 +81,12 @@ def event_handler(klocka):
             else:
                 display_offset = 0
             klocka.running = not klocka.running
-        if event.type == KEYDOWN and (event.key == K_LEFT or event.key == K_d or event.key == K_s or event.key == K_a):
-            display_delta = 0
-            display_offset -= mul
-        if event.type == KEYDOWN and (event.key == K_RIGHT or event.key == K_e or event.key == K_w or event.key == K_q):
+        if event.type == KEYDOWN and (event.key == K_LEFT or event.key == K_3 or event.key == K_2 or event.key == K_1):
             display_delta = 0
             display_offset += mul
+        if event.type == KEYDOWN and (event.key == K_RIGHT or event.key == K_e or event.key == K_w or event.key == K_q):
+            display_delta = 0
+            display_offset -= mul
 
 
 def draw_state():
@@ -94,13 +94,13 @@ def draw_state():
 
     state = [[klockan.floating_minutes, 'm'],
              [klockan.floating_hours, 'h'],
-             [klockan.with_seconds, 'i'],
+             [klockan.with_seconds, 's'],
              [klockan.pseudo_24h, 'p'],
              [klockan.running, 'r'],
              [clock_now, 'n'],
              [clock_text, 't'],
-             [clock_digital, 'l'],
-             [clock_analog, 'f']]
+             [clock_digital, 'd'],
+             [clock_analog, 'a']]
     text3 = [font2.render(char, True, YELLOW if toggle else BLACK) for toggle, char in state]
 
     t3w = 0
