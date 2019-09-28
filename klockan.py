@@ -25,10 +25,13 @@ pygame.display.set_caption('Klockan')
 pygame.display.update()
 klockan = Klocka()
 digital = []
-
+clock_text = True
+clock_digital = True
+clock_analog = True
+clock_now = True
 
 def event_handler(klocka):
-    global display_delta, display_offset, display_time
+    global display_delta, display_offset, display_time, clock_text, clock_digital, clock_analog, clock_now
     mul = 1
     for event in pygame.event.get():
         if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
@@ -61,6 +64,12 @@ def event_handler(klocka):
             klocka.floating_hours = not klocka.floating_hours
         if event.type == KEYDOWN and event.key == K_i:
             klocka.with_seconds = not klocka.with_seconds
+        if event.type == KEYDOWN and event.key == K_t:
+            clock_text = not clock_text
+        if event.type == KEYDOWN and event.key == K_l:
+            clock_digital = not clock_digital
+        if event.type == KEYDOWN and event.key == K_f:
+            clock_analog = not clock_analog
         if event.type == KEYDOWN and event.key == K_p:
             klocka.pseudo_24h = not klocka.pseudo_24h
         if event.type == KEYDOWN and (event.key == K_n or event.key == K_RETURN):
@@ -80,9 +89,34 @@ def event_handler(klocka):
             display_offset += mul
 
 
+def draw_state():
+    top = display_width+150
+
+    state = [[klockan.floating_minutes, 'm'],
+             [klockan.floating_hours, 'h'],
+             [klockan.with_seconds, 'i'],
+             [klockan.pseudo_24h, 'p'],
+             [klockan.running, 'r'],
+             [clock_now, 'n'],
+             [clock_text, 't'],
+             [clock_digital, 'l'],
+             [clock_analog, 'f']]
+    text3 = [font2.render(char, True, YELLOW if toggle else BLACK) for toggle, char in state]
+
+    t3w = 0
+    for dig in text3:
+        t3w += dig.get_width()
+
+    offs = game_display.get_width() // 2
+    for dig in text3:
+        game_display.blit(dig, (offs - t3w // 2, top + 90 - dig.get_height() // 2))
+        offs += dig.get_width()
+
+
 def draw_text():
     top = display_width+150
     pygame.draw.rect(game_display, GRAY, (0, top, display_width, 200))
+    if not clock_text: return
     timme = klockan.now.tm_hour
     minut = klockan.now.tm_min
     if timme > 12: timme -= 12
@@ -101,12 +135,6 @@ def draw_text():
         font2.render("     på ", True, BLACK),
         font2.render(period[klockan.now.tm_hour // 3], True, BLACK)
     ]
-    state = [[klockan.floating_minutes, 'm'],
-             [klockan.floating_hours, 'h'],
-             [klockan.with_seconds, 'i'],
-             [klockan.pseudo_24h, 'p'],
-             [klockan.running, 'r']]
-    text3 = [font2.render(char, True, YELLOW if toggle else BLACK) for toggle, char in state]
 
     offs = 70
     for dig in text1:
@@ -118,18 +146,11 @@ def draw_text():
         game_display.blit(dig, (offs, top + 30 - dig.get_height() // 2))
         offs += dig.get_width()
 
-    t3w = 0
-    for dig in text3:
-        t3w += dig.get_width()
-
-    offs = game_display.get_width() // 2
-    for dig in text3:
-        game_display.blit(dig, (offs - t3w // 2, top + 90 - dig.get_height() // 2))
-        offs += dig.get_width()
 
 def draw_digital():
     top = display_width+50
     pygame.draw.rect(game_display, GRAY, (0, top, display_width, 200))
+    if not clock_digital: return
     digital = [
         font.render("%02d" % klockan.now.tm_hour, True, BLUE),
         font.render(":", True, BLACK),
@@ -151,12 +172,16 @@ def draw_digital():
 
 
 def draw_clock():
+    if not clock_analog:
+        top = display_width
+        pygame.draw.rect(game_display, GRAY, (0, 0, display_width, top))
+        return
     klockan.blit_on(game_display)
 
 
 def newState():
     global last_sec, digital, last_state
-    state = [klockan.floating_minutes, klockan.floating_hours, klockan.with_seconds, klockan.pseudo_24h, klockan.running]
+    state = [klockan.floating_minutes, klockan.floating_hours, klockan.with_seconds, klockan.pseudo_24h, klockan.running, clock_text, clock_digital, clock_analog, clock_now]
     sec = klockan.now.tm_hour * 60 * 60 + klockan.now.tm_min * 60 + klockan.now.tm_sec
     result = sec != last_sec or state != last_state
     last_sec = sec
@@ -167,6 +192,8 @@ def newState():
 while True:
     event_handler(klockan)
     klockan.now = time.localtime(display_time)
+    clock_now = display_offset == 0 and klockan.running
+
     display_offset += display_delta
     if klockan.running:
         display_time = time.time() + display_offset
@@ -177,6 +204,7 @@ while True:
         draw_clock()
         draw_digital()
         draw_text()
+        draw_state()
     # game_display.fill((100,0,0))
     # pygame.draw.rect(game_display, (100,0,100), Rect(10, 10, 20, 20))
     # pygame.draw.polygon(game_display, GREEN, ((146, 0), (291, 106), (236, 277), (56, 277), (0, 106)))
