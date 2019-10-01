@@ -58,9 +58,13 @@ def event_handler(klocka):
                 mul *= 3
             if event.mod & pygame.KMOD_CTRL:
                 mul *= 4
-        if event.type == KEYDOWN and event.key == K_m:
+        if event.type == KEYDOWN and not event.mod & pygame.KMOD_SHIFT and event.key == K_m:
+            klocka.numbered_minutes = not klocka.numbered_minutes
+        if event.type == KEYDOWN and not event.mod & pygame.KMOD_SHIFT and event.key == K_h:
+            klocka.numbered_hours = not klocka.numbered_hours
+        if event.type == KEYDOWN and event.mod & pygame.KMOD_SHIFT and event.key == K_m:
             klocka.floating_minutes = not klocka.floating_minutes
-        if event.type == KEYDOWN and event.key == K_h:
+        if event.type == KEYDOWN and event.mod & pygame.KMOD_SHIFT and event.key == K_h:
             klocka.floating_hours = not klocka.floating_hours
         if event.type == KEYDOWN and event.key == K_s:
             klocka.with_seconds = not klocka.with_seconds
@@ -92,8 +96,10 @@ def event_handler(klocka):
 def draw_state():
     top = display_width+150
 
-    state = [[klockan.floating_minutes, 'm'],
-             [klockan.floating_hours, 'h'],
+    state = [[klockan.numbered_minutes, 'm'],
+             [klockan.numbered_hours, 'h'],
+             [klockan.floating_minutes, 'M'],
+             [klockan.floating_hours, 'H'],
              [klockan.with_seconds, 's'],
              [klockan.pseudo_24h, 'p'],
              [klockan.running, 'r'],
@@ -181,7 +187,7 @@ def draw_clock():
 
 def newState():
     global last_sec, digital, last_state
-    state = [klockan.floating_minutes, klockan.floating_hours, klockan.with_seconds, klockan.pseudo_24h, klockan.running, clock_text, clock_digital, clock_analog, clock_now]
+    state = [klockan.floating_minutes, klockan.floating_hours, klockan.numbered_minutes, klockan.numbered_hours, klockan.with_seconds, klockan.pseudo_24h, klockan.running, clock_text, clock_digital, clock_analog, clock_now]
     sec = klockan.now.tm_hour * 60 * 60 + klockan.now.tm_min * 60 + klockan.now.tm_sec
     result = sec != last_sec or state != last_state
     last_sec = sec

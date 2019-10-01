@@ -15,6 +15,8 @@ class Klocka(pygame.Surface):
     floating_hours = True
     with_seconds = False
     pseudo_24h = False
+    numbered_hours = True
+    numbered_minutes = True
     pygame.font.init()
     font = pygame.font.SysFont("menlottc", 36)
     font2 = pygame.font.SysFont("menlottc", 18)
@@ -63,31 +65,33 @@ class Klocka(pygame.Surface):
             point = self.screen_point(self.rotated((x, y), angle))
             spoint = self.screen_point(self.rotated((x, y * 0.9), angle))
             pygame.draw.line(self, PINK, spoint, point, 4)
-        for i in range(1, 13):
-            angle = i * 30
-            point = self.screen_point(self.rotated((x, y * 1.3), angle))
-            hour = i
-            if self.pseudo_24h:
-                sepangle = ((6 + self.now.tm_hour) % 12) * 30 + 15
-                sep_point = self.screen_point(self.rotated((x, y * 1.1), sepangle))
-                sep_endpoint = self.screen_point(self.rotated((x, y * 1.5), sepangle))
-                pygame.draw.line(self, YELLOW, sep_endpoint, sep_point, 8)
+        if self.numbered_hours:
+            for i in range(1, 13):
+                angle = i * 30
+                point = self.screen_point(self.rotated((x, y * 1.3), angle))
+                hour = i
+                if self.pseudo_24h:
+                    sepangle = ((6 + self.now.tm_hour) % 12) * 30 + 15
+                    sep_point = self.screen_point(self.rotated((x, y * 1.1), sepangle))
+                    sep_endpoint = self.screen_point(self.rotated((x, y * 1.5), sepangle))
+                    pygame.draw.line(self, YELLOW, sep_endpoint, sep_point, 8)
 
-                diff0 = abs(i - self.now.tm_hour)
-                diff24 = abs((i + 24) - self.now.tm_hour)
-                limit = 6 if 6 < self.now.tm_hour <= 18 else 7
-                hour = (i if min(diff0, diff24) < limit else i+12) % 24
-            num = self.font.render(str(hour), True, BLUE)
-            num_rect = num.get_rect()
-            num_rect.center = point
-            self.blit(num, num_rect)
-        for i in range(5, 61, 5):
-            angle = i * 6
-            point = self.screen_point(self.rotated((x, y / 1.3), angle))
-            num = self.font2.render(str(i), True, PINK_T)
-            num_rect = num.get_rect()
-            num_rect.center = point
-            self.blit(num, num_rect, special_flags=BLEND_ADD)
+                    diff0 = abs(i - self.now.tm_hour)
+                    diff24 = abs((i + 24) - self.now.tm_hour)
+                    limit = 6 if 6 < self.now.tm_hour <= 18 else 7
+                    hour = (i if min(diff0, diff24) < limit else i+12) % 24
+                num = self.font.render(str(hour), True, BLUE)
+                num_rect = num.get_rect()
+                num_rect.center = point
+                self.blit(num, num_rect)
+        if self.numbered_minutes:
+            for i in range(5, 61, 5):
+                angle = i * 6
+                point = self.screen_point(self.rotated((x, y / 1.3), angle))
+                num = self.font2.render(str(i), True, PINK_T)
+                num_rect = num.get_rect()
+                num_rect.center = point
+                self.blit(num, num_rect, special_flags=BLEND_ADD)
 
     def blit_hands(self, hour, minute):
         # standard coords of 12:00:00
