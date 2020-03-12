@@ -62,13 +62,13 @@ def event_handler(klocka):
             klocka.numbered_minutes = not klocka.numbered_minutes
         if event.type == KEYDOWN and not event.mod and event.key == K_h:
             klocka.numbered_hours = not klocka.numbered_hours
-        if event.type == KEYDOWN and event.mod & pygame.KMOD_CTRL and event.key == K_h:
-            klocka.tick_hours = not klocka.tick_hours
-        if event.type == KEYDOWN and event.mod & pygame.KMOD_SHIFT and event.key == K_m:
-            klocka.floating_minutes = not klocka.floating_minutes
-        if event.type == KEYDOWN and event.mod & pygame.KMOD_CTRL and event.key == K_m:
-            klocka.tick_minutes = not klocka.tick_minutes
         if event.type == KEYDOWN and event.mod & pygame.KMOD_SHIFT and event.key == K_h:
+            klocka.tick_hours = not klocka.tick_hours
+        if event.type == KEYDOWN and event.mod & pygame.KMOD_CTRL and event.key == K_m:
+            klocka.floating_minutes = not klocka.floating_minutes
+        if event.type == KEYDOWN and event.mod & pygame.KMOD_SHIFT and event.key == K_m:
+            klocka.tick_minutes = not klocka.tick_minutes
+        if event.type == KEYDOWN and event.mod & pygame.KMOD_CTRL and event.key == K_h:
             klocka.floating_hours = not klocka.floating_hours
         if event.type == KEYDOWN and event.key == K_s:
             klocka.with_seconds = not klocka.with_seconds
@@ -102,10 +102,10 @@ def draw_state():
 
     state = [[klockan.numbered_minutes, 'm'],
              [klockan.numbered_hours, 'h'],
-             [klockan.floating_minutes, 'M'],
-             [klockan.floating_hours, 'H'],
-             [klockan.tick_minutes, '^M'],
-             [klockan.tick_hours, '^H'],
+             [klockan.tick_minutes, 'M'],
+             [klockan.tick_hours, 'H'],
+             [klockan.floating_minutes, '^M'],
+             [klockan.floating_hours, '^H'],
              [klockan.with_seconds, 's'],
              [klockan.pseudo_24h, 'p'],
              [klockan.running, 'r'],
