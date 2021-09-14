@@ -48,6 +48,8 @@ def event_handler(klocka):
         if event.type == pygame.KEYDOWN:
             if event.key == K_3 or event.key == K_e:
                 mul = 1
+            if  event.key == K_RIGHT or event.key == K_LEFT:
+                mul = 1 if klocka.with_seconds else 60
             if event.key == K_2 or event.key == K_w:
                 if klocka.with_seconds:
                     mul = 73
@@ -94,10 +96,10 @@ def event_handler(klocka):
             else:
                 display_offset = 0
             klocka.running = not klocka.running
-        if event.type == KEYDOWN and (event.key == K_LEFT or event.key == K_3 or event.key == K_2 or event.key == K_1):
+        if event.type == KEYDOWN and (event.key == K_RIGHT or event.key == K_3 or event.key == K_2 or event.key == K_1):
             display_delta = 0
             display_offset += mul
-        if event.type == KEYDOWN and (event.key == K_RIGHT or event.key == K_e or event.key == K_w or event.key == K_q):
+        if event.type == KEYDOWN and (event.key == K_LEFT or event.key == K_e or event.key == K_w or event.key == K_q):
             display_delta = 0
             display_offset -= mul
 
