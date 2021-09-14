@@ -41,8 +41,10 @@ def event_handler(klocka):
             quit()
         if event.type == KEYDOWN and event.key == K_UP:
             display_delta += 1
+            klocka.running = False
         if event.type == KEYDOWN and event.key == K_DOWN:
             display_delta -= 1
+            klocka.running = False
         if event.type == pygame.KEYDOWN:
             if event.key == K_3 or event.key == K_e:
                 mul = 1
@@ -86,6 +88,7 @@ def event_handler(klocka):
             display_offset = 0
             display_time = time.time()
         if event.type == KEYDOWN and event.key == K_r:
+            display_delta = 0
             if not klocka.running:
                 display_offset = display_time - time.time()
             else:
@@ -122,9 +125,11 @@ def draw_state():
         t3w += dig.get_width()
 
     offs = game_display.get_width() // 2
+    start = offs - t3w // 2
     for dig in text3:
         game_display.blit(dig, (offs - t3w // 2, top + 90 - dig.get_height() // 2))
         offs += dig.get_width()
+    game_display.blit(font2.render("hastighet: " + (str(display_delta) if display_delta else "verklig" if klockan.running else "stillastående"), True, YELLOW if display_delta else BLUE if klockan.running else BLACK), (start, top + 110 - dig.get_height() // 2))
 
 
 def draw_text():
@@ -195,7 +200,7 @@ def draw_clock():
 
 def is_new_state():
     global last_sec, digital, last_state
-    state = [klockan.floating_minutes, klockan.floating_hours, klockan.tick_minutes, klockan.tick_hours, klockan.numbered_minutes, klockan.numbered_hours, klockan.with_seconds, klockan.pseudo_24h, klockan.running, clock_text, clock_digital, clock_analog, clock_now]
+    state = [klockan.floating_minutes, klockan.floating_hours, klockan.tick_minutes, klockan.tick_hours, klockan.numbered_minutes, klockan.numbered_hours, klockan.with_seconds, klockan.pseudo_24h, klockan.running, clock_text, clock_digital, clock_analog, clock_now, display_delta]
     sec = klockan.now.tm_hour * 60 * 60 + klockan.now.tm_min * 60 + klockan.now.tm_sec
     result = sec != last_sec or state != last_state
     last_sec = sec
@@ -208,7 +213,7 @@ while True:
     klockan.now = time.localtime(display_time)
     clock_now = display_offset == 0 and klockan.running
 
-    display_offset += display_delta
+    display_offset += display_delta / (60 if klockan.with_seconds else 1)
     if klockan.running:
         display_time = time.time() + display_offset
     else:
