@@ -19,6 +19,7 @@ pygame.key.set_repeat(500, 50)
 # print(available)
 font = pygame.font.SysFont("menlottc", 128)
 font2 = pygame.font.SysFont("menlottc", 24)
+font3 = pygame.font.SysFont("menlottc", 48)
 game_display = pygame.display.set_mode((display_width, display_height), 0, 32)
 game_display.fill(GRAY)
 pygame.display.set_caption('Klockan')
@@ -139,13 +140,13 @@ def draw_text():
                "tjugo i ", "kvart i ", "tio i ", "fem i ", ""]
     precision = ["     ", "ung. ", "ung. ", "ung. ", "ung. "]
     text1 = [
-        font2.render(precision[minut % 5], True, PINK),
-        font2.render(minuter[(minut + 2) // 5], True, PINK),
-        font2.render(namn[timme + (minut + 35 + 2) // 60], True, BLUE)
+        font3.render(precision[minut % 5], True, PINK),
+        font3.render(minuter[(minut + 2) // 5], True, PINK),
+        font3.render(namn[timme + (minut + 35 + 2) // 60], True, BLUE)
     ]
     text2 = [
-        font2.render("     på ", True, BLACK),
-        font2.render(period[klockan.now.tm_hour // 3], True, BLACK)
+        font3.render("     på ", True, YELLOW),
+        font3.render(period[klockan.now.tm_hour // 3], True, YELLOW)
     ]
 
     offs = 70
