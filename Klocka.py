@@ -15,6 +15,7 @@ class Klocka(pygame.Surface):
     floating_hours = True
     with_seconds = False
     pseudo_24h = False
+    with_day = True
     numbered_hours = True
     tick_hours = True
     numbered_minutes = True
@@ -46,8 +47,10 @@ class Klocka(pygame.Surface):
         self.blit_hands(hour, minute)
         self.blit_dots()
         self.blit_second_hand(second)
-        daycol = self.blit_day(day)
-
+        if self.with_day:
+            daycol = self.blit_day(day)
+        else:
+            daycol = YELLOW
         pygame.draw.circle(self, daycol, self.screen_point((0, 0)), 20)
 
         surface.blit(self, self.pos)
