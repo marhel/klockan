@@ -95,7 +95,7 @@ class Klocka(pygame.Surface):
             for i in range(5, 61, 5):
                 angle = i * 6
                 point = self.screen_point(self.rotated((x, y / 1.3), angle))
-                num = self.font2.render(str(i), True, PINK_T, TRANSPARENT)
+                num = self.font2.render(str(i).zfill(2 if self.pseudo_24h else 1), True, PINK_T, TRANSPARENT)
                 num_rect = num.get_rect()
                 num_rect.center = point
                 self.blit(num, num_rect, special_flags=BLEND_ADD)
