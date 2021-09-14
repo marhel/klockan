@@ -130,6 +130,7 @@ def draw_state():
         game_display.blit(dig, (offs - t3w // 2, top + 90 - dig.get_height() // 2))
         offs += dig.get_width()
     game_display.blit(font2.render("hastighet: " + (str(display_delta) if display_delta else "verklig" if klockan.running else "stillastående"), True, YELLOW if display_delta else BLUE if klockan.running else BLACK), (start, top + 110 - dig.get_height() // 2))
+    game_display.blit(font2.render("1/Q 2/W 3/E + pilarna, med shift/ctrl", True, PINK), (start, top + 130 - dig.get_height() // 2))
 
 
 def draw_text():
