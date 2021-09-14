@@ -17,7 +17,7 @@ pygame.font.init()
 pygame.key.set_repeat(500, 50)
 # available = pygame.font.get_fonts()
 # print(available)
-font = pygame.font.SysFont("menlottc", 36)
+font = pygame.font.SysFont("menlottc", 128)
 font2 = pygame.font.SysFont("menlottc", 24)
 game_display = pygame.display.set_mode((display_width, display_height), 0, 32)
 game_display.fill(GRAY)
@@ -160,7 +160,7 @@ def draw_text():
 
 
 def draw_digital():
-    top = display_width+50
+    top = display_width + 20
     pygame.draw.rect(game_display, GRAY, (0, top, display_width, 200))
     if not clock_digital: return
     digital = [
