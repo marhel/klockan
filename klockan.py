@@ -31,6 +31,7 @@ clock_digital = True
 clock_analog = True
 clock_now = True
 
+
 def event_handler(klocka):
     global display_delta, display_offset, display_time, clock_text, clock_digital, clock_analog, clock_now
     mul = 1
@@ -192,7 +193,7 @@ def draw_clock():
     klockan.blit_on(game_display)
 
 
-def newState():
+def is_new_state():
     global last_sec, digital, last_state
     state = [klockan.floating_minutes, klockan.floating_hours, klockan.tick_minutes, klockan.tick_hours, klockan.numbered_minutes, klockan.numbered_hours, klockan.with_seconds, klockan.pseudo_24h, klockan.running, clock_text, clock_digital, clock_analog, clock_now]
     sec = klockan.now.tm_hour * 60 * 60 + klockan.now.tm_min * 60 + klockan.now.tm_sec
@@ -213,7 +214,7 @@ while True:
     else:
         display_time += display_offset
         display_offset = 0
-    if newState():
+    if is_new_state():
         draw_clock()
         draw_digital()
         draw_text()
