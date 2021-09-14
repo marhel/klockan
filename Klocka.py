@@ -21,7 +21,7 @@ class Klocka(pygame.Surface):
     tick_minutes = True
     pygame.font.init()
     font = pygame.font.SysFont("menlottc", 36)
-    font2 = pygame.font.SysFont("menlottc", 18)
+    font2 = pygame.font.SysFont("menlottc", 24)
 
     def __init__(self):
         pygame.Surface.__init__(self, self.size)
@@ -92,7 +92,7 @@ class Klocka(pygame.Surface):
             for i in range(5, 61, 5):
                 angle = i * 6
                 point = self.screen_point(self.rotated((x, y / 1.3), angle))
-                num = self.font2.render(str(i), True, PINK_T)
+                num = self.font2.render(str(i), True, PINK_T, TRANSPARENT)
                 num_rect = num.get_rect()
                 num_rect.center = point
                 self.blit(num, num_rect, special_flags=BLEND_ADD)
