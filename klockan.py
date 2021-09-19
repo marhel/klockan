@@ -51,15 +51,9 @@ def event_handler(klocka):
             if  event.key == K_RIGHT or event.key == K_LEFT:
                 mul = 1 if klocka.with_seconds else 60
             if event.key == K_2 or event.key == K_w:
-                if klocka.with_seconds:
-                    mul = 73
-                else:
-                    mul = 60
+                mul = 60
             if event.key == K_1 or event.key == K_q:
-                if klocka.with_seconds:
-                    mul = 73 * 5
-                else:
-                    mul = 60 * 5
+                mul = 60 * 60
             if event.mod & pygame.KMOD_SHIFT:
                 mul *= 3
             if event.mod & pygame.KMOD_CTRL:
