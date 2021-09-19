@@ -157,8 +157,8 @@ def draw_text():
         font3.render(namn[timme + (minut + 35 + 2) // 60], True, BLUE)
     ]
     text2 = [
-        font3.render("     på ", True, YELLOW),
-        font3.render(period[klockan.now.tm_hour // 3], True, YELLOW)
+        font3.render("     på ", True, GREEN),
+        font3.render(period[klockan.now.tm_hour // 3], True, GREEN)
     ]
 
     offs = 70
