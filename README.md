@@ -11,6 +11,23 @@ De huvudsakliga funktionerna är
 
 ![skärmbild av Klockan](images/klockan.gif)
 
+## Kör lokalt med Python
+
+För att köra klockan lokalt måste man ta hem källkoden och köra programmet via Python 3. Ett sätt att göra det från kommandoraden är:
+
+    git clone https://github.com/marhel/klockan
+    cd klockan
+    python3 -m venv venv
+    source venv/Scripts/activate    # for bash on Windows, .bat and .ps1 versions in the same folder
+    source venv/bin/activate        # On macOS/Linux
+    pip3 install -r requirements.txt
+    python3 klockan.py
+
+Eller, lite enklare om man inte orkar bry sig om att pygame installeras globalt (utanför en "virtuell miljö", eller venv):
+
+    pip3 install pygame
+    python3 klockan.py
+
 ## Färgkodade tidsdelar
 Tidsdelarna är färgkodade, gul för sekund, rött för minut och blått för timme.
 
